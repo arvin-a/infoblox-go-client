@@ -252,10 +252,13 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 
 func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, queryParams QueryParams) (res []byte, err error) {
 	var req *http.Request
-	req, err = c.RequestBuilder.BuildRequest(t, obj, ref, queryParams)
+	req, err = c.RequestBuilder.BuildRequest(t, obj, ref, queryParams)\
+	log.Printf("ibg -> RequestType: '%s'\n", string(RequestType))
+	log.Printf("ibg -> ref: '%s'\n", string(ref))
+	log.Printf("ibg -> queryParams: '%s'\n", string(queryParams))
 	res, err = c.Requestor.SendRequest(req)
 	if err != nil {
-		/* Forcing the request to redirect to Grid Master by making forcedProxy=true */
+		log.Printf("Forcing the request to redirect to Grid Master by making forcedProxy=true \n")
 		queryParams.forceProxy = true
 		req, err = c.RequestBuilder.BuildRequest(t, obj, ref, queryParams)
 		res, err = c.Requestor.SendRequest(req)
@@ -284,9 +287,9 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 
 func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
 	queryParams := QueryParams{forceProxy: false}
-	log.Info("ibg -> Making request: ", queryParams)
+	log.Printf("ibg -> Making request: '%s'\n", string(queryParams))
 	resp, err := c.makeRequest(GET, obj, ref, queryParams)
-	log.Info("ibg -> Request response: ", resp )
+	log.Printf("ibg -> Request response: '%s'\n", string(resp) )
 	//to check empty underlying value of interface
 	var result interface{}
 	err = json.Unmarshal(resp, &result)
