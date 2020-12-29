@@ -145,6 +145,7 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 
 func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err error) {
 	var resp *http.Response
+	log.Info("ibg ->  HTTP Request", req)
 	resp, err = whr.client.Do(req)
 	if err != nil {
 		return
@@ -283,7 +284,9 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 
 func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
 	queryParams := QueryParams{forceProxy: false}
+	log.Info("ibg -> Making request: ", queryParams)
 	resp, err := c.makeRequest(GET, obj, ref, queryParams)
+	log.Info("ibg -> Request response: ", resp )
 	//to check empty underlying value of interface
 	var result interface{}
 	err = json.Unmarshal(resp, &result)
@@ -365,6 +368,7 @@ func validateConnector(c *Connector) (err error) {
 	var response []UserProfile
 	userprofile := NewUserProfile(UserProfile{})
 	err = c.GetObject(userprofile, "", &response)
+
 	if err != nil {
 		log.Printf("Failed to connect to the Grid, err: %s \n", err)
 	}
